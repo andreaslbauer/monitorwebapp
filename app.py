@@ -31,6 +31,8 @@ else :
     logging.info("Running on Linux")
     dbfilename = "/opt/pimon/data.db"
 
+
+# resource field mapping used when marshalling data
 resourceFields = {
     'id':       fields.Integer,
     'sensorid': fields.Integer,
@@ -234,7 +236,7 @@ def summary():
     page = page + "</html>"
     return page
 
-
+# Data Access Object to wrap a row into a data point object
 class DataPointDAO(object):
     def __init__(self, row):
         self.id = row[0]
@@ -244,13 +246,14 @@ class DataPointDAO(object):
         self.isodatetime = row[4]
         self.value = row[5]
 
+# Data Point object.  Use to marshal a data row
 class DataPoint(Resource):
     @marshal_with(resourceFields)
     def get(self, sensorid):
         row = getLastRowForSensor(sensorid)
         return DataPointDAO(row)
 
-
+# Data Point object.  Use to marshal several data rows
 class DataPoints(Resource):
     @marshal_with(resourceFields)
     def get(self, sensorid):
@@ -271,13 +274,13 @@ class DataPointsToday(Resource):
             dataPoints.append(DataPointDAO(row))
         return dataPoints
 
+# get the last n data points but skip as many as indicated by interleave inbetween
 class DataPointsLastN(Resource):
     @marshal_with(resourceFields)
     def get(self, sensorid, numberRows, interleave):
         rows = getLastNRowsBySensor(sensorid, numberRows)
         dataPoints = []
         count = 0
-        #print("Interleave = ", interleave, "Number Rows = ", numberRows)
 
         # append the data rows to the return data set - but leave out rows as specified by the interleave num
         for row in rows:
@@ -289,25 +292,26 @@ class DataPointsLastN(Resource):
                 
         return dataPoints
 
-# set up the logger
-#logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
-logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 
-#api.add_resource(DataPoint, '/datapoint')
 api.add_resource(DataPoint, '/datapoint/<int:sensorid>')
 api.add_resource(DataPoints, '/datapoints/<int:sensorid>')
 api.add_resource(DataPointsToday, '/datapoints/today/<int:sensorid>')
 api.add_resource(DataPointsLastN, '/datapoints/<int:sensorid>/<int:numberRows>/<int:interleave>')
 
+# the main routine
 if __name__ == '__main__':
     print("Starting Web Monitor Application")
+
+    # set up the logger
+    # logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 
     # log start up message
     logging.info("***************************************************************")
     logging.info("Web Monitor Application has started")
     logging.info("Running %s", __file__)
     logging.info("Working directory is %s", os.getcwd())
-    logging.info("SQLITE Database file is %s", dbfilename);
+    logging.info("SQLITE Database file is %s", dbfilename)
 
     try:
         hostname = socket.gethostname()
