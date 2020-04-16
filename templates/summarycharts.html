@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Sensor Data</title>
+
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.css' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <script type = "text/javascript" src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script type = "text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type = "text/javascript" src = "https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.js"></script>
+
+    <script type="text/javascript">
+
+        var numberOfSamples = '1800';
+        var interleave = '30';
+
+        function drawChart(dataURL, targetTag, chartTitle) {
+            // use d3 library to load chart data in JSON format
+            d3.json(dataURL, function(data) {
+
+                // now need to convert the dates for the charting package
+                var dataItemCount = data.length;
+                for (var i = 0; i < dataItemCount; i++) {
+                    var dataItem = data[i];
+                    var dateObject = new Date(Date.parse(dataItem.isodatetime));
+                    dataItem.date = dateObject;
+                }
+
+                // size chart window width to browers viewport width
+                var viewportWidth  = document.documentElement.clientWidth;
+
+                //data = MG.convert.date(data, 'date');
+                MG.data_graphic({
+                    title: chartTitle,
+                    description: "This graphic shows measurements from the Raspberry Pi Sensors",
+                    data: data,
+                    area: false,
+                    width: (viewportWidth - 32) / 2,
+                    height: 200,
+                    target: targetTag,
+                    x_accessor: 'date',
+                    y_accessor: 'value'
+                });
+            });
+        }
+
+        function drawCharts(numberOfSamples, interleave) {
+            drawChart('/datapoints/1/' + numberOfSamples + '/' + interleave, "#channel1Chart", "Temperature Air [F]");
+            drawChart('/datapoints/2/' + numberOfSamples + '/' + interleave, "#channel2Chart", "Temperature Ground [F]");
+            drawChart('/datapoints/3/' + numberOfSamples + '/' + interleave, "#channel3Chart", "Voltage Battery [V]");
+            drawChart('/datapoints/4/' + numberOfSamples + '/' + interleave, "#channel4Chart", "Current Battery [A]");
+            drawChart('/datapoints/5/' + numberOfSamples + '/' + interleave, "#channel5Chart", "Voltage Solar Panels [V]");
+            drawChart('/datapoints/6/' + numberOfSamples + '/' + interleave, "#channel6Chart", "Voltage USB [Volt]");
+        };
+
+        function updateCurrentTemperature() {
+            for (var i = 1; i < 7; i++) {
+                let s = i.toString();
+                $.getJSON('/datapoint/' + s, function(d) {
+                    var tag = '#currentTemp' + s;
+                    $(tag).html(d.value.toFixed(2));
+                    $(currentLastUpdated).html(d.time);
+              });
+            };
+        };
+
+        $(document).ready(function(){
+
+            $('#inputNumberSamples').val(numberOfSamples);
+            $('#inputInterleave').val(interleave);
+
+            updateCurrentTemperature()
+
+            numberOfSamples = $('#inputNumberSamples').val();
+            console.log(numberOfSamples);
+            interleave = $('#inputInterleave').val();
+
+            $('#reloadCharts').click(function(){
+                console.log("Reload charts");
+                numberOfSamples = $('#inputNumberSamples').val();
+                interleave = $('#inputInterleave').val();
+                updateCurrentTemperature()
+                drawCharts(numberOfSamples, interleave);
+            });
+
+            drawCharts(numberOfSamples, interleave);
+        });
+
+    </script>
+
+</head>
+<body>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Web Measurement Center</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/detailedcharts">Detail Charts</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/log">Logs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Refresh</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+
+<h2>Current Measurements</h2>
+
+<table class="table table-primary">
+    <style>.nobr { white-space: nowrap }</style>
+    <tr>
+        <td td class=nobr>Last Updated: <b><span id="currentLastUpdated">12:34:56</span></b></td>
+        <td td class=nobr>Air [F]: <b><span id="currentTemp1"></span></b></td>
+        <td td class=nobr>Ground [F]: <b><span id="currentTemp2"></span></b></td>        
+        <td td class=nobr>Battery [V]: <b><span id="currentTemp3"></span></b></td>
+        <td td class=nobr>Battery [A]: <b><span id="currentTemp4"></span></b></td>
+        <td td class=nobr>Solar Panels [V]: <b><span id="currentTemp5"></span></b></td>
+        <td td class=nobr>USB [V]: <b><span id="currentTemp6"></span></b></td>
+    </tr>
+</table>
+
+<form class="form-inline">
+  <div class="form-group">
+    <label for="numberSamples">Number of Samples</label>
+    <input type="text" id="inputNumberSamples" class="form-control mx-sm-3">
+  </div>
+
+  <div class="form-group">
+    <label for="interleave">Interleave</label>
+    <input type="text" id="inputInterleave" class="form-control mx-sm-3">
+  </div>
+  
+    <input type="button" id="reloadCharts" class="btn btn-primary my-1" value="Update Charts"">
+</form>
+<table>
+    <style>.nobr { white-space: nowrap }</style>
+    <tr>
+        <td><div id="channel1Chart"></div></td><p>
+        <td><div id="channel2Chart"></div></td><p>
+    </tr>
+    <tr>
+        <td><div id="channel3Chart"></div></td><p>
+        <td><div id="channel4Chart"></div></td><p>
+    </tr>
+    <tr>
+        <td><div id="channel5Chart"></div></td><p>
+        <td><div id="channel6Chart"></div></td><p>
+    </tr>
+</table>
+</body>
+</html>
