@@ -15,13 +15,18 @@ import os
 import sqlite3
 from sqlite3 import Error
 import datetime
+import sys
 
 app = Flask(__name__)
 api = Api(app)
 parser = reqparse.RequestParser()
 
-dbfilename = "z:\data.db"
-#dbfilename = "/tmp/data.db"
+if sys.platform.startswith('win') :
+    logging.info("Running on Windows")
+    dbfilename = "z:\data.db"
+else :
+    logging.info("Running on Linux")
+    dbfilename = "/tmp/data.db"
 
 resourceFields = {
     'id':       fields.Integer,
