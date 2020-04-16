@@ -2,6 +2,7 @@
 
 #
 # Flask Web App to implement web pages and REST endpoints for measurement display
+# Requires Flask and Flask-Rest
 #
 
 from flask import Flask
@@ -28,7 +29,7 @@ if sys.platform.startswith('win') :
     dbfilename = "z:\data.db"
 else :
     logging.info("Running on Linux")
-    dbfilename = "/tmp/data.db"
+    dbfilename = "/opt/pimon/data.db"
 
 resourceFields = {
     'id':       fields.Integer,
