@@ -292,7 +292,7 @@ class DataPointsLastN(Resource):
                 
         return dataPoints
 
-
+# add REST end points
 api.add_resource(DataPoint, '/datapoint/<int:sensorid>')
 api.add_resource(DataPoints, '/datapoints/<int:sensorid>')
 api.add_resource(DataPointsToday, '/datapoints/today/<int:sensorid>')
