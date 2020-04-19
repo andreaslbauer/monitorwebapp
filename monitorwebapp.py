@@ -17,6 +17,8 @@ import sqlite3
 from sqlite3 import Error
 import datetime
 import sys
+import socket
+import requests
 
 app = Flask(__name__)
 api = Api(app)
@@ -315,7 +317,7 @@ if __name__ == '__main__':
 
     try:
         hostname = socket.gethostname()
-        externalip = get('https://api.ipify.org').text
+        externalip = requests.get('https://api.ipify.org').text
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('8.8.8.8', 1))  # connect() for UDP doesn't send packets
         localipaddress = s.getsockname()[0]
