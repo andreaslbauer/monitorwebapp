@@ -203,12 +203,12 @@ def summarycharts():
 def detailedcharts():
     return render_template('detailedcharts.html')
 
-@app.route('/log')
-def log():
+@app.route('/datacollectorlog')
+def datacollectorlog():
     f = open("/tmp/datacollector.log", "r")
 
     page = "<!DOCTYPE html>"
-    page = page + "<html><h1>Web Thermometer Sensor Reader Log</h1><hr><br><pre>"
+    page = page + "<html><h1>Data Collector Log</h1><hr><br><pre>"
 
     for line in f:
         page = page + line
@@ -216,6 +216,18 @@ def log():
     page = page + "</pre></html>"
     return page
 
+@app.route('/servicecontrollerlog')
+def servicecontrollerlog():
+    f = open("/tmp/servicecontroller.log", "r")
+
+    page = "<!DOCTYPE html>"
+    page = page + "<html><h1>Service Controller Log</h1><hr><br><pre>"
+
+    for line in f:
+        page = page + line
+
+    page = page + "</pre></html>"
+    return page
 
 @app.route('/summary')
 def summary():

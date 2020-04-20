@@ -19,8 +19,9 @@
         var interleave = '30';
 
         function drawChart(dataURL, statusTag, targetTag, chartTitle) {
-            // use d3 library to load chart data in JSON format
             $(statusTag).html("Loading...");
+
+            // use d3 library to load chart data in JSON format
             d3.json(dataURL, function(data) {
 
                 // now need to convert the dates for the charting package

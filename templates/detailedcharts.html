@@ -18,7 +18,8 @@
         var numberOfSamples = '1800';
         var interleave = '30';
 
-        function drawChart(dataURL, targetTag, chartTitle) {
+        function drawChart(dataURL, statusTag, targetTag, chartTitle) {
+            $(statusTag).html("Loading...");
             // use d3 library to load chart data in JSON format
             d3.json(dataURL, function(data) {
 
@@ -45,16 +46,18 @@
                     x_accessor: 'date',
                     y_accessor: 'value'
                 });
+
+                $(statusTag).html("");
             });
         }
 
         function drawCharts(numberOfSamples, interleave) {
-            drawChart('/datapoints/1/' + numberOfSamples + '/' + interleave, "#channel1Chart", "Temperature Air [F]");
-            drawChart('/datapoints/2/' + numberOfSamples + '/' + interleave, "#channel2Chart", "Temperature Ground [F]");
-            drawChart('/datapoints/3/' + numberOfSamples + '/' + interleave, "#channel3Chart", "Voltage Battery [V]");
-            drawChart('/datapoints/4/' + numberOfSamples + '/' + interleave, "#channel4Chart", "Current Battery [A]");
-            drawChart('/datapoints/5/' + numberOfSamples + '/' + interleave, "#channel5Chart", "Voltage Solar Panels [V]");
-            drawChart('/datapoints/6/' + numberOfSamples + '/' + interleave, "#channel6Chart", "Inverter Draw [A]");
+            drawChart('/datapoints/1/' + numberOfSamples + '/' + interleave, "#channel1Status", "#channel1Chart", "Temperature Air [F]");
+            drawChart('/datapoints/2/' + numberOfSamples + '/' + interleave, "#channel2Status", "#channel2Chart", "Temperature Ground [F]");
+            drawChart('/datapoints/3/' + numberOfSamples + '/' + interleave, "#channel3Status", "#channel3Chart", "Voltage Battery [V]");
+            drawChart('/datapoints/4/' + numberOfSamples + '/' + interleave, "#channel4Status", "#channel4Chart", "Current Battery [A]");
+            drawChart('/datapoints/5/' + numberOfSamples + '/' + interleave, "#channel5Status", "#channel5Chart", "Voltage Solar Panels [V]");
+            drawChart('/datapoints/6/' + numberOfSamples + '/' + interleave, "#channel6Status", "#channel6Chart", "Inverter Draw [A]");
         };
 
         function updateCurrentTemperature() {
@@ -155,22 +158,22 @@
 <table>
     <style>.nobr { white-space: nowrap }</style>
     <tr>
-        <td><div id="channel1Chart"></div></td><p>
+        <td><div id="channel1Status"></div><div id="channel1Chart"></div></td><p>
     </tr>
     <tr>
-        <td><div id="channel2Chart"></div></td><p>
+        <td><div id="channel2Status"></div><div id="channel2Chart"></div></td><p>
     </tr>
     <tr>
-        <td><div id="channel3Chart"></div></td><p>
+        <td><div id="channel3Status"></div><div id="channel3Chart"></div></td><p>
     </tr>
     <tr>
-        <td><div id="channel4Chart"></div></td><p>
+        <td><div id="channel4Status"></div><div id="channel4Chart"></div></td><p>
     </tr>
     <tr>
-        <td><div id="channel5Chart"></div></td><p>
+        <td><div id="channel5Status"></div><div id="channel5Chart"></div></td><p>
     </tr>
     <tr>
-        <td><div id="channel6Chart"></div></td><p>
+        <td><div id="channel6Status"></div><div id="channel6Chart"></div></td><p>
     </tr>
 </table>
 </body>
