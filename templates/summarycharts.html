@@ -17,6 +17,7 @@
 
         var numberOfSamples = '1800';
         var interleave = '30';
+        var autoupdate = false;
 
         function drawChart(dataURL, statusTag, targetTag, chartTitle) {
             $(statusTag).html("Loading...");
@@ -48,7 +49,7 @@
                     y_accessor: 'value'
                 });
 
-                $(statusTag).html("");
+                $(statusTag).html(" ");
             });
         }
 
@@ -72,6 +73,23 @@
             };
         };
 
+        function updateDisplay() {
+            console.log("Reload charts");
+            numberOfSamples = $('#inputNumberSamples').val();
+            interleave = $('#inputInterleave').val();
+            updateCurrentTemperature()
+            drawCharts(numberOfSamples, interleave);
+        }
+
+        // set interval to reload every 120s if checkbox for auto-reload is checked
+        setInterval(function(){
+            autoupdate = $('#autoupdate').val();
+            console.log(autoupdate);
+            if (autoupdate == 'on') {
+              updateDisplay();
+            }
+        }, 120000);
+
         $(document).ready(function(){
 
             $('#inputNumberSamples').val(numberOfSamples);
@@ -82,13 +100,10 @@
             numberOfSamples = $('#inputNumberSamples').val();
             console.log(numberOfSamples);
             interleave = $('#inputInterleave').val();
+            autoupdate = $('#autoupdate').val();
 
             $('#reloadCharts').click(function(){
-                console.log("Reload charts");
-                numberOfSamples = $('#inputNumberSamples').val();
-                interleave = $('#inputInterleave').val();
-                updateCurrentTemperature()
-                drawCharts(numberOfSamples, interleave);
+                updateDisplay();
             });
 
             drawCharts(numberOfSamples, interleave);
@@ -154,7 +169,7 @@
     <input type="text" id="inputInterleave" class="form-control mx-sm-3">
   </div>
 
-    <input type="button" id="reloadCharts" class="btn btn-primary my-1" value="Update Charts"">
+    <input type="button" id="reloadCharts" class="btn btn-primary mx-sm-3" value="Update Charts"">
 
     <div class="form-group">
     <label for="autoupdate">Update Automatically</label>
