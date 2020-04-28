@@ -93,12 +93,12 @@
             updateinterval = $('#updateinterval').val();
             updateintervalint = Number(updateinterval) * 1000;
             autoupdate = $('#autoupdate').is(':checked');
-            console.log('Set update timer: ', updateintervalint, autoupdate);
+            console.log('Set update timer: ', updateintervalint, autoupdate, " at ", new Date().toLocaleString());
 
             // set interval to reload every 60s if checkbox for auto-reload is checked
             setTimeout(function() {
                 autoupdate = $('#autoupdate').is(':checked');
-                console.log('Update timer fired: ', updateintervalint, autoupdate);
+                console.log('Update timer fired: ', updateintervalint, autoupdate, " at ", new Date().toLocaleString());
                 if (autoupdate) {
                   updateDisplay();
                 }
