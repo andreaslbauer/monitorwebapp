@@ -45,13 +45,13 @@
                     area: false,
                     width: (viewportWidth - 32) / 2,
                     height: 200,
-                    top : 20,
+                    top : 25,
                     target: targetTag,
                     x_accessor: 'date',
                     y_accessor: 'value'
                 });
 
-                $(statusTag).html(lastupdatetime);
+                $(statusTag).html('Last Updated: ' + lastupdatetime);
             });
         }
 
