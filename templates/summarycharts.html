@@ -18,6 +18,7 @@
         var numberOfSamples = '1800';
         var interleave = '30';
         var autoupdate = false;
+        var lastupdatetime = 'N/A';
 
         function drawChart(dataURL, statusTag, targetTag, chartTitle) {
             $(statusTag).html("Loading...");
@@ -49,7 +50,7 @@
                     y_accessor: 'value'
                 });
 
-                $(statusTag).html("Updated");
+                $(statusTag).html(lastupdatetime);
             });
         }
 
@@ -69,6 +70,7 @@
                     var tag = '#currentTemp' + s;
                     $(tag).html(d.value.toFixed(2));
                     $(currentLastUpdated).html(d.time);
+                    lastupdatetime = d.time;
               });
             };
         };
