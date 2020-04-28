@@ -102,6 +102,9 @@
                 if (autoupdate) {
                   updateDisplay();
                 }
+
+                // set update timer to redraw automatically (if checkbox checked)
+                setUpdateTimer();
             }, updateintervalint);
         }
 
@@ -111,9 +114,6 @@
             interleave = $('#inputInterleave').val();
             updateCurrentTemperature()
             drawCharts(numberOfSamples, interleave);
-
-            // set update timer to redraw automatically (if checkbox checked)
-            setUpdateTimer();
         }
 
         $(document).ready(function(){
