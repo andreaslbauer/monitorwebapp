@@ -92,11 +92,13 @@
 
             updateinterval = $('#updateinterval').val();
             updateintervalint = Number(updateinterval) * 1000;
+            autoupdate = $('#autoupdate').val();
             console.log('Set update timer: ', updateintervalint, autoupdate);
 
             // set interval to reload every 60s if checkbox for auto-reload is checked
             setTimeout(function() {
                 autoupdate = $('#autoupdate').val();
+                console.log('Update timer fired: ', updateintervalint, autoupdate);
                 if (autoupdate == 'on') {
                   updateDisplay();
                 }
@@ -199,13 +201,13 @@
     <input type="button" id="reloadCharts" class="btn btn-primary mx-sm-3" value="Update Charts">
 
     <div class="form-group">
-    <label for="updateinterval">Update Interval</label>
-    <input type="text" id="updateinterval" class="form-control mx-sm-3">
+    <label for="autoupdate">Update Automatically</label>
+    <input type="checkbox" id="autoupdate" class="form-control mx-sm-3">
   </div>
 
     <div class="form-group">
-    <label for="autoupdate">Update Automatically</label>
-    <input type="checkbox" id="autoupdate" class="form-control mx-sm-3">
+    <label for="updateinterval">Update Interval</label>
+    <input type="text" id="updateinterval" class="form-control mx-sm-3">
   </div>
 
 </form>
