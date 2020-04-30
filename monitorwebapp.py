@@ -28,7 +28,7 @@ parser = reqparse.RequestParser()
 dbfilename = ""
 if sys.platform.startswith('win') :
     logging.info("Running on Windows")
-    dbfilename = "z:\data.db"
+    dbfilename = "c:\workspaces\data.db"
 else :
     logging.info("Running on Linux")
     dbfilename = "/opt/pimon/data.db"
