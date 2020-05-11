@@ -31,7 +31,7 @@ if sys.platform.startswith('win') :
     dbfilename = "c:\workspaces\data.db"
 else :
     logging.info("Running on Linux")
-    dbfilename = "/opt/pimon/data.db"
+    dbfilename = "/home/pi/pimon/data.db"
 
 
 # resource field mapping used when marshalling data

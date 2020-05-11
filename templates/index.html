@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Web Measurement Center</title>
-</head>
+{% extends 'base.html' %}
+
+{% block header %}
+  <h3>{% block title %}Web Measurement Center{% endblock %}</h3>
+{% endblock %}
+
+{% block content %}
+
 <body>
-    <h1>Web Measurement Center</h1>
     <hr>
     <br>
     <a href="/datacollectorlog">Data Collector Log</a><br>
@@ -18,3 +20,6 @@
     <a href="/detailedcharts">Detailed Charts</a><br>
 </body>
 </html>
+
+{% endblock %}
+
