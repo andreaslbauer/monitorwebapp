@@ -83,9 +83,9 @@
         function drawCharts(numberOfSamples, interleave) {
             drawChart(ip + '/datapoints/1/' + numberOfSamples + '/' + interleave, "#channel1Status", "#channel1Chart", "Temperature Air [F]");
             drawChart(ip + '/datapoints/2/' + numberOfSamples + '/' + interleave, "#channel2Status", "#channel2Chart", "Temperature Ground [F]");
-            drawChart(ip + '/datapoints/3/' + numberOfSamples + '/' + interleave, "#channel3Status", "#channel3Chart", "Voltage Battery [V]");
-            drawChart(ip + '/datapoints/4/' + numberOfSamples + '/' + interleave, "#channel4Status", "#channel4Chart", "Current Battery [A]");
-            drawChart(ip + '/datapoints/5/' + numberOfSamples + '/' + interleave, "#channel5Status", "#channel5Chart", "Voltage Solar Panels [V]");
+            drawChart(ip + '/datapoints/3/' + numberOfSamples + '/' + interleave, "#channel3Status", "#channel3Chart", "Voltage Solar Panel [V]");
+            drawChart(ip + '/datapoints/4/' + numberOfSamples + '/' + interleave, "#channel4Status", "#channel4Chart", "Voltage Battery [V]");
+            drawChart(ip + '/datapoints/5/' + numberOfSamples + '/' + interleave, "#channel5Status", "#channel5Chart", "Current [A]");
             drawChart(ip + '/datapoints/6/' + numberOfSamples + '/' + interleave, "#channel6Status", "#channel6Chart", "Inverter Draw [A]");
         };
 
