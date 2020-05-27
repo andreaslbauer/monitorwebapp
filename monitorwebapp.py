@@ -5,9 +5,9 @@
 # Requires Flask and Flask-Rest
 #
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask import render_template
-from flask_restful import Resource, Api, fields, marshal_with, reqparse
+from flask_restful import Resource, Api, fields, marshal_with, reqparse, marshal
 # logging facility: https://realpython.com/python-logging/
 import logging
 import os
@@ -23,6 +23,7 @@ import requests
 app = Flask(__name__)
 api = Api(app)
 parser = reqparse.RequestParser()
+OurHostname = ""
 
 # set the filename for the SQLite DB
 dbfilename = ""
@@ -306,11 +307,26 @@ class DataPointsLastN(Resource):
                 
         return dataPoints
 
+
+# get the last n data points but skip as many as indicated by interleave inbetween
+class ServerInfo(Resource):
+
+#    model = {
+#        'hostname' : fields.String
+#    }
+
+#    @marshal_with(model)
+    def get(self):
+        return jsonify({'hostname': OurHostname})
+
+
+
 # add REST end points
 api.add_resource(DataPoint, '/datapoint/<int:sensorid>')
 api.add_resource(DataPoints, '/datapoints/<int:sensorid>')
 api.add_resource(DataPointsToday, '/datapoints/today/<int:sensorid>')
 api.add_resource(DataPointsLastN, '/datapoints/<int:sensorid>/<int:numberRows>/<int:interleave>')
+api.add_resource(ServerInfo, '/serverinfo')
 
 # the main routine
 if __name__ == '__main__':
@@ -329,6 +345,7 @@ if __name__ == '__main__':
 
     try:
         hostname = socket.gethostname()
+        OurHostname = hostname
         externalip = requests.get('https://api.ipify.org').text
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('8.8.8.8', 1))  # connect() for UDP doesn't send packets
