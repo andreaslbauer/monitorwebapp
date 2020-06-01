@@ -251,6 +251,29 @@ def summary():
     page = page + "</html>"
     return page
 
+@app.route('/db.csv')
+def csv():
+    # return all data as CSV (comma seperated values)
+    page = ""
+
+    db = createConnection(dbfilename)
+    numrows = countRows(db)
+    for id in range(0, numrows):
+        row = getRow(db, id)
+
+        #print(row)
+        if row != None:
+            channel = row[1]
+            if (channel == 1):
+                datestamp = row[2]
+                timestamp = row[3]
+                page = page + "\n"
+                page = page + datestamp + ' ' + timestamp
+
+            page = page + ", " + str(row[5])
+
+    return page
+
 # Data Access Object to wrap a row into a data point object
 class DataPointDAO(object):
     def __init__(self, row):
