@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h3>{% block title %}Summary Charts{% endblock %}</h3>
+{% endblock %}
+
+{% block content %}
+
+<script type="text/javascript">
+
+    chartstyle = 2;
+    console.log('Mobile summary page');
+    ip = ""
+
+    function updateCurrentTemperature() {
+        for (var i = 1; i < 4; i++) {
+            let s = i.toString();
+            $.getJSON(ip + '/datapoint/' + s, function(d) {
+                var tag = '#currentTemp' + s;
+                $(tag).html(d.value.toFixed(2));
+                $(currentLastUpdated).html(d.time);
+                lastupdatetime = d.time;
+          });
+        };
+    };
+
+    function updateDisplay() {
+        console.log("Reload data");
+        updateCurrentTemperature()
+    }
+
+    $(document).ready(function(){
+
+        updateCurrentTemperature()
+
+        $('#reloadCharts').click(function(){
+            updateDisplay();
+        });
+
+        // update hostname
+        $.getJSON('/serverinfo', function(d) {
+            $('#hostname').html(d.hostname);
+        });
+
+    });
+</script>
+
+
+<form class="form-inline">
+    <input type="button" id="reloadCharts" class="btn btn-primary mx-sm-3" value="Update Charts">
+
+    <div class="form-group">
+    <label for="autoupdate">Update Automatically</label>
+    <input type="checkbox" id="autoupdate" class="form-control mx-sm-3">
+  </div>
+
+    <div class="form-group">
+    <label for="updateinterval">Update Interval</label>
+    <input type="text" id="updateinterval" size="8" class="form-control mx-sm-3">
+  </div>
+
+</form>
+<p></p>
+<table class="table table-striped">
+    <thead class="thead-dark">
+    <tr>
+      <th scope="col">Channel</th>
+      <th scope="col">Value</th>
+    </tr>
+  </thead>
+    <tbody>
+    <style>.nobr { white-space: nowrap }</style>
+    <tr>
+        <td><div id="channel1Status">Channel 1</div></td><td><div id="channel1Chart"><span id="currentTemp1"></span></div></td>
+    </tr>
+    <tr>
+        <td><div id="channel1Status">Channel 2</div></td><td><div id="channel1Chart"><span id="currentTemp2"></span></div></td>
+    </tr>
+    <tr>
+        <td><div id="channel1Status">Channel 3</div></td><td><div id="channel1Chart"><span id="currentTemp3"></span></div></td>
+    </tr>
+    </tbody>
+</table>
+
+
+{% endblock %}
+

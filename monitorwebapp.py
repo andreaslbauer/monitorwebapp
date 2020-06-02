@@ -196,6 +196,10 @@ def index():
 def current():
     return render_template('current.html')
 
+@app.route('/mobile')
+def mobile():
+    return render_template('mobile.html')
+
 @app.route('/summarycharts')
 def summarycharts():
     return render_template('summarycharts.html')
@@ -250,6 +254,8 @@ def summary():
 
     page = page + "</html>"
     return page
+
+
 
 @app.route('/db.csv')
 def csv():
