@@ -13,26 +13,18 @@ import logging
 import os
 
 # sqlite3 access API
-import sqlite3
-from sqlite3 import Error
+
 import datetime
-import sys
 import socket
 import requests
+from dbhelper import sqlhelper
+from dbhelper import infohelper
+
 
 app = Flask(__name__)
 api = Api(app)
 parser = reqparse.RequestParser()
 OurHostname = ""
-
-# set the filename for the SQLite DB
-dbfilename = ""
-if sys.platform.startswith('win') :
-    logging.info("Running on Windows")
-    dbfilename = "c:\workspaces\data.db"
-else :
-    logging.info("Running on Linux")
-    dbfilename = "/home/pi/pimon/data.db"
 
 
 # resource field mapping used when marshalling data
@@ -44,148 +36,6 @@ resourceFields = {
     'isodatetime': fields.String,
     'value':    fields.Float
 }
-
-# create connection to our db
-def createConnection(dbFileName):
-    """ create a database connection to a SQLite database """
-    db = None
-    try:
-        db = sqlite3.connect(dbFileName)
-        return db
-    except Error as e:
-        logging.error("Unable to create database connection to %s", dbFileName)
-        if db != None:
-            db.close()
-
-    return None
-
-# get number of rows in table
-def countRows(mydb):
-    sql = '''select count(*) from datapoints'''
-    try:
-        cursor = mydb.cursor()
-        result = cursor.execute(sql).fetchone()
-        return result[0]
-
-    except Error as e:
-        logging.exception("Exception occurred")
-        logging.error("Unable to get row count of table datapoints")
-
-        return 0
-
-
-# get specific row
-def getRow(mydb, id):
-    try:
-        cursor = mydb.cursor()
-        cursor.execute('''SELECT * FROM datapoints WHERE id=?''', (id,))
-        return cursor.fetchone()
-
-    except Error as e:
-        logging.exception("Exception occurred")
-        logging.error("Unable to get data point %s", id)
-
-        return 0
-
-
-# get specific row
-def getRows(mydb, fromId, toId):
-    try:
-        cursor = mydb.cursor()
-        cursor.execute('''SELECT * FROM datapoints WHERE id>=? and id<=?''', (fromId, toId,))
-        return cursor.fetchall()
-
-    except Error as e:
-        logging.exception("Exception occurred")
-        logging.error("Unable to get data point %s", id)
-
-        return 0
-
-# get the last data point for a given sensor
-def getLastRowForSensor(sensorId):
-    try:
-        logging.info("Get last data point for sensor %s", sensorId)
-        mydb = createConnection(dbfilename)
-        cursor = mydb.cursor()
-        sql = '''select count(*) from datapoints'''
-        result = cursor.execute(sql).fetchone()
-        lastRow = result[0]
-        cursor.execute('''SELECT * FROM datapoints WHERE sensorid=? and id>=? and id<=?''', (sensorId, lastRow - 5, lastRow,))
-        row = cursor.fetchone()
-        mydb.close()
-        return row
-
-    except Error as e:
-        logging.exception("Exception occurred")
-        logging.error("Unable to get data point %s", id)
-
-    mydb.close()
-    return None
-
-# get specific row
-def getLastNRowsBySensor(sensorId, rowCount):
-    try:
-        logging.info("Get last %s data points for sensor %s", rowCount, sensorId)
-        mydb = createConnection(dbfilename)
-        cursor = mydb.cursor()
-        sql = '''select count(*) from datapoints'''
-        result = cursor.execute(sql).fetchone()
-        lastRow = result[0]
-        cursor.execute('''SELECT * FROM datapoints WHERE sensorid=? and id>=? and id<=?''',
-                       (sensorId, lastRow - (6 * rowCount), lastRow,))
-        row = cursor.fetchall()
-        mydb.close()
-        return row
-
-    except Error as e:
-        logging.exception("Exception occurred")
-        logging.error("Unable to get data point %s", id)
-
-    mydb.close()
-    return None
-
-
-# get all data points for a given sensor
-def getAllRowsForSensor(sensorId):
-    try:
-        logging.info("Get last data point for sensor %s", sensorId)
-        mydb = createConnection(dbfilename)
-        cursor = mydb.cursor()
-        sql = '''select count(*) from datapoints'''
-        result = cursor.execute(sql).fetchone()
-        lastRow = result[0]
-        cursor.execute('''SELECT * FROM datapoints WHERE sensorid=? order by id''', (sensorId,))
-        rows = cursor.fetchall()
-        mydb.close()
-        return rows
-
-    except Error as e:
-        logging.exception("Exception occurred")
-        logging.error("Unable to get data point %s", id)
-
-    mydb.close()
-    return None
-
-# get all data points for a given sensor
-def getAllRowsBySensorByDate(sensorId, date):
-    try:
-        logging.info("Get all data points for sensor %s and %s", sensorId, date)
-        mydb = createConnection(dbfilename)
-        cursor = mydb.cursor()
-        sql = '''select count(*) from datapoints'''
-        result = cursor.execute(sql).fetchone()
-        lastRow = result[0]
-        cursor.execute('''SELECT * FROM datapoints WHERE sensorid=? and date=? order by id''', (sensorId, date,))
-        rows = cursor.fetchall()
-        mydb.close()
-        return rows
-
-    except Error as e:
-        logging.exception("Exception occurred")
-        logging.error("Unable to get data point %s", id)
-
-    mydb.close()
-    return None
 
 
 @app.route('/')
@@ -239,13 +89,28 @@ def summary():
     page = "<!DOCTYPE html>"
     page = page + "<html><h1>Web Thermometer Sensor Summary</h1><hr><br>"
 
-    db = createConnection(dbfilename)
-    rowCount = countRows(db)
+    db = sqlhelper.createConnection(sqlhelper.dbfilename)
+    rowCount = sqlhelper.countRows(db)
     page = page + "Number of data points in table: " + str(rowCount) + '<p>'
-    row = getRow(db, rowCount)
+    row = sqlhelper.getRow(db, rowCount)
 
-    rows = getRows(db, rowCount - 24, rowCount)
-    page = page + "Last 24 rows: <p>"
+    # display how many sensor are collecting data
+    sensorCount = infohelper.numberSensors(db)
+    page = page + "Number of sensors: " + str(sensorCount) + '<p>'
+
+    # display how many sensor are collecting data
+    rateOfChange = infohelper.getRateOfChange(db)
+    page = page + "Rate of change: " + str(rateOfChange) + '<p>'
+
+    # display time elapsed between sensor writes
+    timeBetweenReads = infohelper.timeBetweenSensorReads(db)
+    page = page + "Time between sensor reads: " + str(timeBetweenReads) + '<p>'
+
+    # display trends over past 10 mins
+
+
+    rows = sqlhelper.getRows(db, rowCount - 12, rowCount)
+    page = page + "Last 12 rows: <p>"
     for r in rows:
         page = page + str(r) + '<p>'
 
@@ -262,10 +127,10 @@ def csv():
     # return all data as CSV (comma seperated values)
     page = ""
 
-    db = createConnection(dbfilename)
-    numrows = countRows(db)
+    db = sqlhelper.createConnection(dbfilename)
+    numrows = sqlhelper.countRows(db)
     for id in range(0, numrows):
-        row = getRow(db, id)
+        row = sqlhelper.getRow(db, id)
 
         #print(row)
         if row != None:
@@ -294,14 +159,14 @@ class DataPointDAO(object):
 class DataPoint(Resource):
     @marshal_with(resourceFields)
     def get(self, sensorid):
-        row = getLastRowForSensor(sensorid)
+        row = sqlhelper.getLastRowForSensor(sensorid)
         return DataPointDAO(row)
 
 # Data Point object.  Use to marshal several data rows
 class DataPoints(Resource):
     @marshal_with(resourceFields)
     def get(self, sensorid):
-        rows = getAllRowsForSensor(sensorid)
+        rows = sqlhelper.getAllRowsForSensor(sensorid)
         dataPoints = []
         for row in rows:
             dataPoints.append(DataPointDAO(row))
@@ -312,7 +177,7 @@ class DataPointsToday(Resource):
     def get(self, sensorid):
         now = datetime.datetime.now()
         nowDate = now.strftime("%Y-%m-%d")
-        rows = getAllRowsBySensorByDate(sensorid, nowDate)
+        rows = sqlhelper.getAllRowsBySensorByDate(sensorid, nowDate)
         dataPoints = []
         for row in rows:
             dataPoints.append(DataPointDAO(row))
@@ -322,7 +187,7 @@ class DataPointsToday(Resource):
 class DataPointsLastN(Resource):
     @marshal_with(resourceFields)
     def get(self, sensorid, numberRows, interleave):
-        rows = getLastNRowsBySensor(sensorid, numberRows)
+        rows = sqlhelper.getLastNRowsBySensor(sensorid, numberRows)
         dataPoints = []
         count = 0
 
@@ -336,15 +201,21 @@ class DataPointsLastN(Resource):
                 
         return dataPoints
 
+# get the change information
+class ValueChange(Resource):
 
-# get the last n data points but skip as many as indicated by interleave inbetween
+    def get(self, sensorid, numberrows):
+        db = sqlhelper.createConnection(sqlhelper.dbfilename)
+        changes = infohelper.getRateOfChange(db, numberrows)
+        timeBetweenReads = infohelper.timeBetweenSensorReads(db) * numberrows
+        change = changes[sensorid - 1]
+        rateOfChange = 60 * 60 * (change / timeBetweenReads)
+        return jsonify({'change': change,
+                        'rateOfChange' : rateOfChange})
+
+# get the server hostname
 class ServerInfo(Resource):
 
-#    model = {
-#        'hostname' : fields.String
-#    }
-
-#    @marshal_with(model)
     def get(self):
         return jsonify({'hostname': OurHostname})
 
@@ -355,6 +226,7 @@ api.add_resource(DataPoint, '/datapoint/<int:sensorid>')
 api.add_resource(DataPoints, '/datapoints/<int:sensorid>')
 api.add_resource(DataPointsToday, '/datapoints/today/<int:sensorid>')
 api.add_resource(DataPointsLastN, '/datapoints/<int:sensorid>/<int:numberRows>/<int:interleave>')
+api.add_resource(ValueChange, '/datachange/<int:sensorid>/<int:numberrows>')
 api.add_resource(ServerInfo, '/serverinfo')
 
 # the main routine
@@ -370,7 +242,7 @@ if __name__ == '__main__':
     logging.info("Web Monitor Application has started")
     logging.info("Running %s", __file__)
     logging.info("Working directory is %s", os.getcwd())
-    logging.info("SQLITE Database file is %s", dbfilename)
+    logging.info("SQLITE Database file is %s", sqlhelper.dbfilename)
 
     try:
         hostname = socket.gethostname()
@@ -386,6 +258,6 @@ if __name__ == '__main__':
         logging.exception("Exception occurred")
         logging.error("Unable to get network information")
 
-    db = createConnection(dbfilename)
+    db = sqlhelper.createConnection(sqlhelper.dbfilename)
     app.run(debug=True, host='0.0.0.0')
 

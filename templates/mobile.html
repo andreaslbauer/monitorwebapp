@@ -17,10 +17,15 @@
             let s = i.toString();
             $.getJSON(ip + '/datapoint/' + s, function(d) {
                 var tag = '#currentTemp' + s;
-                $(tag).html(d.value.toFixed(2));
+                $(tag).html(d.value.toFixed(3));
                 $(currentLastUpdated).html(d.time);
                 lastupdatetime = d.time;
-          });
+            });
+
+            $.getJSON(ip + '/datachange/' + s + '/10', function(d) {
+                var tag = '#currentRate' + s;
+                $(tag).html(d.rateOfChange.toFixed(3));
+            });
         };
     };
 
@@ -64,7 +69,7 @@
     <tr>
       <th scope="col">Channel</th>
       <th scope="col">Value</th>
-        <th scope="col">Change</th>
+        <th scope="col">Change / h</th>
     </tr>
   </thead>
     <tbody>
