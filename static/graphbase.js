@@ -63,9 +63,9 @@ function drawChart(dataURL, statusTag, targetTag, chartTitle) {
 }
 
 function drawCharts(numberOfSamples, interleave) {
-    drawChart(ip + '/datapoints/1/' + numberOfSamples + '/' + interleave, "#channel1Status", "#channel1Chart", "Temperature Air [F]");
-    drawChart(ip + '/datapoints/2/' + numberOfSamples + '/' + interleave, "#channel2Status", "#channel2Chart", "Temperature Ground [F]");
-    drawChart(ip + '/datapoints/3/' + numberOfSamples + '/' + interleave, "#channel3Status", "#channel3Chart", "Voltage Solar Panel [V]");
+    drawChart(ip + '/datapoints/1/' + numberOfSamples + '/' + interleave, "#channel1Status", "#channel1Chart", "Sensor 1 [F]");
+    drawChart(ip + '/datapoints/2/' + numberOfSamples + '/' + interleave, "#channel2Status", "#channel2Chart", "Sensor 2 [F]");
+    drawChart(ip + '/datapoints/3/' + numberOfSamples + '/' + interleave, "#channel3Status", "#channel3Chart", "Sensor 3 [F]");
     drawChart(ip + '/datapoints/4/' + numberOfSamples + '/' + interleave, "#channel4Status", "#channel4Chart", "Voltage Battery [V]");
     drawChart(ip + '/datapoints/5/' + numberOfSamples + '/' + interleave, "#channel5Status", "#channel5Chart", "Current [A]");
     drawChart(ip + '/datapoints/6/' + numberOfSamples + '/' + interleave, "#channel6Status", "#channel6Chart", "Inverter Draw [A]");
