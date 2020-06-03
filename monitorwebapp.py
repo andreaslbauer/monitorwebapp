@@ -206,10 +206,10 @@ class ValueChange(Resource):
 
     def get(self, sensorid, numberrows):
         db = sqlhelper.createConnection(sqlhelper.dbfilename)
-        changes = infohelper.getRateOfChange(db, numberrows)
+        changes = infohelper.getChange(db, numberrows)
         timeBetweenReads = infohelper.timeBetweenSensorReads(db) * numberrows
         change = changes[sensorid - 1]
-        rateOfChange = 60 * 60 * (change / timeBetweenReads)
+        rateOfChange = (60 * 60 * change) / timeBetweenReads
         return jsonify({'change': change,
                         'rateOfChange' : rateOfChange})
 

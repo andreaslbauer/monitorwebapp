@@ -42,8 +42,8 @@ def timeBetweenSensorReads(db):
 
     return seconds
 
-def getRateOfChange(db, rangeInbetween = 10):
-
+def getChange(db, rangeInbetween = 10):
+    # compute the change
     timeBetween = timeBetweenSensorReads(db)
     rowCount = sqlhelper.countRows(db)
     sensorCount = numberSensors(db)
@@ -53,14 +53,12 @@ def getRateOfChange(db, rangeInbetween = 10):
     lastRows = sqlhelper.getRows(db, rowCount - sensorCount, rowCount)
     beforeRows = sqlhelper.getRows(db, rowCount - sensorCount - offset, rowCount - offset)
 
-    print(lastRows)
-    print(beforeRows)
-
-    rateList = [None] * sensorCount
+    # set up a return list that has change for each sensor
+    changeList = [None] * sensorCount
     for i in range(0, sensorCount):
         sensorId = lastRows[i][1]
         valueLast = lastRows[sensorId][5]
         valueBefore = beforeRows[sensorId][5]
-        rateList[sensorId - 1] = (valueLast - valueBefore) / (rangeInbetween * timeBetween)
+        changeList[sensorId - 1] = valueLast - valueBefore
 
-    return rateList
+    return changeList
