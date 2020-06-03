@@ -50,13 +50,12 @@
 
     <h3>{% block title %}Quick View{% endblock %}</h3>
 
-<form class="form-inline">
-    <input type="button" id="reloadCharts" class="btn btn-primary mx-sm-3" value="Update">
-
-</form>
 <p></p>
 
 <table class="table">
+    <td><form class="form-inline">
+    <input type="button" id="reloadCharts" class="btn btn-primary mx-sm-3" value="Update">
+</form></td>
     <td td class=nobr>Last Updated: <b><span id="currentLastUpdated">Loading...</span></b></td>
 </table>
 
@@ -65,18 +64,25 @@
     <tr>
       <th scope="col">Channel</th>
       <th scope="col">Value</th>
+        <th scope="col">Change</th>
     </tr>
   </thead>
     <tbody>
     <style>.nobr { white-space: nowrap }</style>
     <tr>
-        <td><div id="channel1Status">Channel 1</div></td><td><div id="channel1Chart"><span id="currentTemp1"></span></div></td>
+        <td><div id="channel1Status">Channel 1</div></td>
+        <td><div id="channel1Value"><span id="currentTemp1"></span></div></td>
+        <td><div id="channel1Rate"><span id="currentRate1"></span></div></td>
     </tr>
     <tr>
-        <td><div id="channel1Status">Channel 2</div></td><td><div id="channel1Chart"><span id="currentTemp2"></span></div></td>
+        <td><div id="channel2Status">Channel 2</div></td>
+        <td><div id="channel2Value"><span id="currentTemp2"></span></div></td>
+        <td><div id="channel2Rate"><span id="currentRate2"></span></div></td>
     </tr>
     <tr>
-        <td><div id="channel1Status">Channel 3</div></td><td><div id="channel1Chart"><span id="currentTemp3"></span></div></td>
+        <td><div id="channel3Status">Channel 3</div></td>
+        <td><div id="channel3Value"><span id="currentTemp3"></span></div></td>
+        <td><div id="channel3Rate"><span id="currentRate3"></span></div></td>
     </tr>
     </tbody>
 </table>
