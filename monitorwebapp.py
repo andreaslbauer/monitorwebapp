@@ -55,6 +55,11 @@ def reboot():
     os.system('sudo reboot 1')
     return render_template('reboot.html')
 
+@app.route('/shutdown')
+def shutdown():
+    os.system('sudo shutdown 1')
+    return render_template('shutdown.html')
+
 @app.route('/summarycharts')
 def summarycharts():
     return render_template('summarycharts.html')
