@@ -5,11 +5,15 @@
 # Requires Flask and Flask-Rest
 #
 
+import logging
+# set up the logger
+logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
+#logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
+
 from flask import Flask, jsonify
 from flask import render_template
 from flask_restful import Resource, Api, fields, marshal_with, reqparse, marshal
 # logging facility: https://realpython.com/python-logging/
-import logging
 import os
 import time
 
@@ -39,13 +43,13 @@ resourceFields = {
     'value':    fields.Float
 }
 
+thread = None
+
 def shutdown():
-    time.sleep(2)
     logging.info("Shutting down...")
     os.system('sudo shutdown 1')
 
 def reboot():
-    time.sleep(2)
     logging.info("Rebooting...")
     os.system('sudo reboot 1')
 
@@ -63,14 +67,16 @@ def mobile():
 
 @app.route('/reboot')
 def reboot():
-    t = threading.Thread(target = reboot, args=())
-    t.start()
+    global thread
+    thread = threading.Timer(2, reboot, ())
+    thread.start()
     return render_template('reboot.html')
 
 @app.route('/shutdown')
 def shutdown():
-    t = threading.Thread(target = shutdown, args=())
-    t.start()
+    global thread
+    thread = threading.Timer(2, shutdown, ())
+    thread.start()
     return render_template('shutdown.html')
 
 @app.route('/summarycharts')
@@ -254,9 +260,7 @@ api.add_resource(ServerInfo, '/serverinfo')
 
 # the main routine
 if __name__ == '__main__':
-    # set up the logger
-    logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
-    #logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
+
 
     # log start up message
     logging.info("***************************************************************")
