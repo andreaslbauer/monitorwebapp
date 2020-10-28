@@ -11,6 +11,7 @@ from flask_restful import Resource, Api, fields, marshal_with, reqparse, marshal
 # logging facility: https://realpython.com/python-logging/
 import logging
 import os
+import time
 
 # sqlite3 access API
 
@@ -19,6 +20,7 @@ import socket
 import requests
 from dbhelper import sqlhelper
 from dbhelper import infohelper
+import threading
 
 
 app = Flask(__name__)
@@ -37,6 +39,15 @@ resourceFields = {
     'value':    fields.Float
 }
 
+def shutdown():
+    time.sleep(2)
+    logging.info("Shutting down...")
+    os.system('sudo shutdown 1')
+
+def reboot():
+    time.sleep(2)
+    logging.info("Rebooting...")
+    os.system('sudo reboot 1')
 
 @app.route('/')
 def index():
@@ -52,12 +63,14 @@ def mobile():
 
 @app.route('/reboot')
 def reboot():
-    os.system('sudo reboot 1')
+    t = threading.Thread(target = reboot, args=())
+    t.start()
     return render_template('reboot.html')
 
 @app.route('/shutdown')
 def shutdown():
-    os.system('sudo shutdown 1')
+    t = threading.Thread(target = shutdown, args=())
+    t.start()
     return render_template('shutdown.html')
 
 @app.route('/summarycharts')
