@@ -1,6 +1,6 @@
 
-var numberOfSamples = '18000';
-var interleave = '300';
+var numberOfSamples = '180';
+var interleave = '3';
 var autoupdate = false;
 var updateinterval = '60';
 //var ip = "http://192.168.0.125:5000";
