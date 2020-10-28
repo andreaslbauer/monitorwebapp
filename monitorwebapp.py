@@ -257,8 +257,8 @@ if __name__ == '__main__':
     print("Starting Web Monitor Application")
 
     # set up the logger
-    # logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
+    logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
+    #logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 
     # log start up message
     logging.info("***************************************************************")
