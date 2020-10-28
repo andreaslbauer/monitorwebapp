@@ -50,6 +50,11 @@ def current():
 def mobile():
     return render_template('mobile.html')
 
+@app.route('/reboot')
+def reboot():
+    os.system('sudo reboot 1')
+    return render_template('reboot.html')
+
 @app.route('/summarycharts')
 def summarycharts():
     return render_template('summarycharts.html')
