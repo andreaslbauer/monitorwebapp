@@ -13,6 +13,7 @@ logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(lev
 from flask import Flask, jsonify
 from flask import render_template
 from flask_restful import Resource, Api, fields, marshal_with, reqparse, marshal
+from flask_executor import Executor
 # logging facility: https://realpython.com/python-logging/
 import os
 import time
@@ -29,6 +30,7 @@ import threading
 
 app = Flask(__name__)
 api = Api(app)
+executor = Executor(app)
 parser = reqparse.RequestParser()
 OurHostname = ""
 
@@ -43,13 +45,13 @@ resourceFields = {
     'value':    fields.Float
 }
 
-thread = None
-
-def shutdown():
+def shutdownCMD():
+    time.sleep(2)
     logging.info("Shutting down...")
     os.system('sudo shutdown 1')
 
-def reboot():
+def rebootCMD():
+    time.sleep(2)
     logging.info("Rebooting...")
     os.system('sudo reboot 1')
 
@@ -67,16 +69,12 @@ def mobile():
 
 @app.route('/reboot')
 def reboot():
-    global thread
-    thread = threading.Timer(2, reboot, ())
-    thread.start()
+    executor.submit(rebootCMD)
     return render_template('reboot.html')
 
 @app.route('/shutdown')
 def shutdown():
-    global thread
-    thread = threading.Timer(2, shutdown, ())
-    thread.start()
+    executor.submit(shutdownCMD)
     return render_template('shutdown.html')
 
 @app.route('/summarycharts')
