@@ -5,12 +5,18 @@
 # Requires Flask and Flask-Rest
 #
 
+import logging
+# set up the logger
+logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
+#logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
+
 from flask import Flask, jsonify
 from flask import render_template
 from flask_restful import Resource, Api, fields, marshal_with, reqparse, marshal
+from flask_executor import Executor
 # logging facility: https://realpython.com/python-logging/
-import logging
 import os
+import time
 
 # sqlite3 access API
 
@@ -19,10 +25,12 @@ import socket
 import requests
 from dbhelper import sqlhelper
 from dbhelper import infohelper
+import threading
 
 
 app = Flask(__name__)
 api = Api(app)
+executor = Executor(app)
 parser = reqparse.RequestParser()
 OurHostname = ""
 
@@ -37,6 +45,15 @@ resourceFields = {
     'value':    fields.Float
 }
 
+def shutdownCMD():
+    time.sleep(2)
+    logging.info("Shutting down...")
+    os.system('sudo shutdown 1')
+
+def rebootCMD():
+    time.sleep(2)
+    logging.info("Rebooting...")
+    os.system('sudo reboot 1')
 
 @app.route('/')
 def index():
@@ -49,6 +66,16 @@ def current():
 @app.route('/mobile')
 def mobile():
     return render_template('mobile.html')
+
+@app.route('/reboot')
+def reboot():
+    executor.submit(rebootCMD)
+    return render_template('reboot.html')
+
+@app.route('/shutdown')
+def shutdown():
+    executor.submit(shutdownCMD)
+    return render_template('shutdown.html')
 
 @app.route('/summarycharts')
 def summarycharts():
@@ -231,11 +258,7 @@ api.add_resource(ServerInfo, '/serverinfo')
 
 # the main routine
 if __name__ == '__main__':
-    print("Starting Web Monitor Application")
 
-    # set up the logger
-    # logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 
     # log start up message
     logging.info("***************************************************************")
