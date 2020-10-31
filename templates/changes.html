@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container">
+<div class="p-1">
+
+    <h3>{% block title %}Changes{% endblock %}</h3>
+
+<p></p>
+
+<table class="table">
+    <td><form class="form-inline">
+    <input type="button" id="reloadCharts" class="btn btn-primary mx-sm-3" value="Update">
+</form></td>
+    <td td class=nobr>Last Updated: <b><span id="currentLastUpdated">{{ lastupdated }}</span></b></td>
+</table>
+
+<table class="table table-striped">
+    <thead class="thead-dark">
+    <tr>
+      <th scope="col">Time</th>
+      <th scope="col">Temp 1</th>
+      <th scope="col">Temp 2</th>
+      <th scope="col">Temp 3</th>
+    </tr>
+  </thead>
+    <tbody>
+    <style>.nobr { white-space: nowrap }</style>
+    {% for line in data %}
+    <tr>
+        {% for col in line %}
+          <td>{{ col }}</td>
+        {% endfor %}
+     </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    <table>
+      <td>
+        <a class="nav-link" href="http://pitemp/mobile">PiTemp</a>
+      </td>
+      <td>
+        <a class="nav-link" href="http://pished:5000/mobile">PiShed</a>
+      </td>
+      <td>
+        <a class="nav-link" href="http://pibrew:5000/mobile">PiBrew</a>
+      </td>
+        <td>
+        <a class="nav-link" href="http://picam:5000/mobile">PiCam</a>
+      </td>
+    </table>
+
+    </ul>
+</div>
+</div>
+
+
+{% endblock %}
+

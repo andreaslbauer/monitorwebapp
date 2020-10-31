@@ -147,6 +147,13 @@ def summary():
     page = page + "</html>"
     return page
 
+@app.route('/changes')
+def changes():
+
+    db = sqlhelper.createConnection(sqlhelper.dbfilename)
+    a = infohelper.getChanges(db, 10, 10 * 60)
+
+    return render_template('changes.html', data = a, lastupdated = a[0][0])
 
 
 @app.route('/db.csv')
@@ -154,7 +161,7 @@ def csv():
     # return all data as CSV (comma seperated values)
     page = ""
 
-    db = sqlhelper.createConnection(dbfilename)
+    db = sqlhelper.createConnection(sqlhelper.dbfilename)
     numrows = sqlhelper.countRows(db)
     for id in range(0, numrows):
         row = sqlhelper.getRow(db, id)

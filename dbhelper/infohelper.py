@@ -62,3 +62,32 @@ def getChange(db, rangeInbetween = 10):
         changeList[sensorId - 1] = valueLast - valueBefore
 
     return changeList
+
+
+def getChanges(db, numberRows, timeInterleave = 10):
+    # compute the change
+    timeBetween = timeBetweenSensorReads(db)
+    rangeInbetween = int(timeInterleave / (timeBetween + 1))
+    rowCount = sqlhelper.countRows(db)
+    sensorCount = numberSensors(db)
+
+    # get the last 6 rows
+    offset = sensorCount * rangeInbetween
+    rows = []
+    for rowIndex in range(0, numberRows):
+        offsetIndex = offset * rowIndex
+        rows.append(sqlhelper.getRows(db, rowCount - sensorCount - offsetIndex + 1, rowCount - offsetIndex))
+
+    # set up a return list that has change for each sensor
+    changeArray = []
+
+    for rowIndex in range(0, numberRows):
+        changeArray.append([None] * (sensorCount + 1))
+        changeArray[rowIndex][0] = rows[rowIndex][1][3]
+        for sensor in range(0, sensorCount):
+            sensorId = rows[rowIndex][sensor][1]
+            v = round(rows[rowIndex][sensorId - 1][5], 1)
+            changeArray[rowIndex][sensorId] = v
+
+
+    return changeArray
