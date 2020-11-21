@@ -90,28 +90,6 @@ def getLastRowForSensor(sensorId):
     mydb.close()
     return None
 
-# get specific row
-def getLastNRowsBySensor(sensorId, rowCount):
-    try:
-        logging.info("Get last %s data points for sensor %s", rowCount, sensorId)
-        mydb = createConnection(dbfilename)
-        cursor = mydb.cursor()
-        sql = '''select count(*) from datapoints'''
-        result = cursor.execute(sql).fetchone()
-        lastRow = result[0]
-        cursor.execute('''SELECT * FROM datapoints WHERE sensorid=? and id>=? and id<=?''',
-                       (sensorId, lastRow - (6 * rowCount), lastRow,))
-        row = cursor.fetchall()
-        mydb.close()
-        return row
-
-    except sqlite3.Error as e:
-        logging.exception("Exception occurred")
-        logging.error("Unable to get data point %s", id)
-
-    mydb.close()
-    return None
-
 
 # get all data points for a given sensor
 def getAllRowsForSensor(sensorId):

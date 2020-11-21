@@ -25,6 +25,7 @@ import socket
 import requests
 from dbhelper import sqlhelper
 from dbhelper import infohelper
+from dbhelper import dataaccess
 import threading
 
 
@@ -104,6 +105,19 @@ def servicecontrollerlog():
 
     page = "<!DOCTYPE html>"
     page = page + "<html><h1>Service Controller Log</h1><hr><br><pre>"
+
+    for line in f:
+        page = page + line
+
+    page = page + "</pre></html>"
+    return page
+
+@app.route('/webapplog')
+def webapplog():
+    f = open("/tmp/monitorwebapp.log", "r")
+
+    page = "<!DOCTYPE html>"
+    page = page + "<html><h1>Web App Log</h1><hr><br><pre>"
 
     for line in f:
         page = page + line
@@ -221,7 +235,7 @@ class DataPointsToday(Resource):
 class DataPointsLastN(Resource):
     @marshal_with(resourceFields)
     def get(self, sensorid, numberRows, interleave):
-        rows = sqlhelper.getLastNRowsBySensor(sensorid, numberRows)
+        rows = dataaccess.getLastNRowsBySensor(sensorid, numberRows * interleave)
         dataPoints = []
         count = 0
 
@@ -253,7 +267,13 @@ class ServerInfo(Resource):
     def get(self):
         return jsonify({'hostname': OurHostname})
 
+class DataInfo(Resource):
 
+    def get(self):
+        datainfo = {}
+        datainfo["numSensors"] =  infohelper.DataInfo.dataInfo.numberOfSensors
+        datainfo["timeBetweenUpdates"] =  infohelper.DataInfo.dataInfo.timeBetweenSensorReads
+        return jsonify(datainfo)
 
 # add REST end points
 api.add_resource(DataPoint, '/datapoint/<int:sensorid>')
@@ -262,6 +282,7 @@ api.add_resource(DataPointsToday, '/datapoints/today/<int:sensorid>')
 api.add_resource(DataPointsLastN, '/datapoints/<int:sensorid>/<int:numberRows>/<int:interleave>')
 api.add_resource(ValueChange, '/datachange/<int:sensorid>/<int:numberrows>')
 api.add_resource(ServerInfo, '/serverinfo')
+api.add_resource(DataInfo, '/datainfo')
 
 # the main routine
 if __name__ == '__main__':

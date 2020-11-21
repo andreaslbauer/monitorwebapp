@@ -11,8 +11,6 @@ $(document).ready(function() {
     $('#inputInterleave').val(interleave);
     $('#updateinterval').val(updateinterval);
 
-    updateCurrentTemperature()
-
     numberOfSamples = $('#inputNumberSamples').val();
     console.log(numberOfSamples);
     interleave = $('#inputInterleave').val();
@@ -25,5 +23,29 @@ $(document).ready(function() {
         updateDisplay();
     });
 
-    drawCharts(numberOfSamples, interleave);
+
+    $.getJSON('/datainfo', function(d) {
+        let s = "<style>.nobr { white-space: nowrap }</style>";
+        numberOfSensors = d.numSensors;
+
+        s = s + "<tr>";
+        for (var sensorid = 1; sensorid <= numberOfSensors; sensorid++) {
+            newTableRow = false;
+            if ((sensorid) % (chartstyle + 1) == 0) { newTableRow = true; }
+            if (newTableRow) { s = s + "</tr>"; }
+
+            s = s + "<td><div id=\"channel" + sensorid.toString() + "Status\"></div><div id=\"channel" +
+                    sensorid.toString() + "Chart\"></div></td>"
+
+            if (newTableRow) { s = s + "<tr>"; }
+        }
+        s = s + "</tr>";
+        console.log(s);
+        $('#charts').html(s);
+
+        // update numbers, draw the charts
+        updateCurrentTemperature(numberOfSensors);
+        drawCharts(numberOfSamples, interleave, numberOfSensors, chartstyle);
+    });
+
 });
