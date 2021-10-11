@@ -38,7 +38,7 @@ function drawChart(dataURL, statusTag, targetTag, chartTitle) {
                 chartheight = 180;
             } else {
                 chartwidth = viewportWidth - 32;
-                chartheight = 300;
+                chartheight = 240;
             }
 
             //data = MG.convert.date(data, 'date');
