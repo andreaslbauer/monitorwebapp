@@ -39,8 +39,14 @@ function drawChart(dataURL, statusTag, targetTag, chartTitle) {
                 chartheight = 180;
             } else {
                 chartwidth = viewportWidth - 32;
-                chartheight = 240;
-            }
+                chartheight = 205;
+
+            var max = d3.max(data, function (d) {
+                return d.value;
+            });
+            var min = d3.min(data, function(d) {
+                return d.value;
+            });
 
             //data = MG.convert.date(data, 'date');
             MG.data_graphic({
