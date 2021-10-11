@@ -1,6 +1,6 @@
 
-function updateCurrentTemperature() {
-    for (var i = 1; i < 7; i++) {
+function updateCurrentTemperature(numberOfSensors) {
+    for (var i = 1; i <= numberOfSensors; i++) {
         let s = i.toString();
         $.getJSON(ip + '/datapoint/' + s, function(d) {
             var tag = '#currentTemp' + s;
@@ -32,8 +32,8 @@ function updateDisplay() {
     console.log("Reload charts");
     numberOfSamples = $('#inputNumberSamples').val();
     interleave = $('#inputInterleave').val();
-    updateCurrentTemperature()
-    drawCharts(numberOfSamples, interleave);
+    updateCurrentTemperature(numberOfSensors)
+    drawCharts(numberOfSamples, interleave, numberOfSensors, chartstyle);
 
     // set update timer to redraw automatically (if checkbox checked)
     setUpdateTimer();

@@ -5,12 +5,18 @@
 # Requires Flask and Flask-Rest
 #
 
+import logging
+# set up the logger
+logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
+#logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
+
 from flask import Flask, jsonify
 from flask import render_template
 from flask_restful import Resource, Api, fields, marshal_with, reqparse, marshal
+from flask_executor import Executor
 # logging facility: https://realpython.com/python-logging/
-import logging
 import os
+import time
 
 # sqlite3 access API
 
@@ -19,10 +25,13 @@ import socket
 import requests
 from dbhelper import sqlhelper
 from dbhelper import infohelper
+from dbhelper import dataaccess
+import threading
 
 
 app = Flask(__name__)
 api = Api(app)
+executor = Executor(app)
 parser = reqparse.RequestParser()
 OurHostname = ""
 
@@ -37,6 +46,15 @@ resourceFields = {
     'value':    fields.Float
 }
 
+def shutdownCMD():
+    time.sleep(2)
+    logging.info("Shutting down...")
+    os.system('sudo shutdown 1')
+
+def rebootCMD():
+    time.sleep(2)
+    logging.info("Rebooting...")
+    os.system('sudo reboot 1')
 
 @app.route('/')
 def index():
@@ -49,6 +67,16 @@ def current():
 @app.route('/mobile')
 def mobile():
     return render_template('mobile.html')
+
+@app.route('/reboot')
+def reboot():
+    executor.submit(rebootCMD)
+    return render_template('reboot.html')
+
+@app.route('/shutdown')
+def shutdown():
+    executor.submit(shutdownCMD)
+    return render_template('shutdown.html')
 
 @app.route('/summarycharts')
 def summarycharts():
@@ -77,6 +105,19 @@ def servicecontrollerlog():
 
     page = "<!DOCTYPE html>"
     page = page + "<html><h1>Service Controller Log</h1><hr><br><pre>"
+
+    for line in f:
+        page = page + line
+
+    page = page + "</pre></html>"
+    return page
+
+@app.route('/webapplog')
+def webapplog():
+    f = open("/tmp/monitorwebapp.log", "r")
+
+    page = "<!DOCTYPE html>"
+    page = page + "<html><h1>Web App Log</h1><hr><br><pre>"
 
     for line in f:
         page = page + line
@@ -120,6 +161,13 @@ def summary():
     page = page + "</html>"
     return page
 
+@app.route('/changes')
+def changes():
+
+    db = sqlhelper.createConnection(sqlhelper.dbfilename)
+    a = infohelper.getChanges(db, 10, 10 * 60)
+
+    return render_template('changes.html', data = a, lastupdated = a[0][0])
 
 
 @app.route('/db.csv')
@@ -127,7 +175,7 @@ def csv():
     # return all data as CSV (comma seperated values)
     page = ""
 
-    db = sqlhelper.createConnection(dbfilename)
+    db = sqlhelper.createConnection(sqlhelper.dbfilename)
     numrows = sqlhelper.countRows(db)
     for id in range(0, numrows):
         row = sqlhelper.getRow(db, id)
@@ -187,7 +235,7 @@ class DataPointsToday(Resource):
 class DataPointsLastN(Resource):
     @marshal_with(resourceFields)
     def get(self, sensorid, numberRows, interleave):
-        rows = sqlhelper.getLastNRowsBySensor(sensorid, numberRows)
+        rows = dataaccess.getLastNRowsBySensor(sensorid, numberRows * interleave)
         dataPoints = []
         count = 0
 
@@ -219,7 +267,13 @@ class ServerInfo(Resource):
     def get(self):
         return jsonify({'hostname': OurHostname})
 
+class DataInfo(Resource):
 
+    def get(self):
+        datainfo = {}
+        datainfo["numSensors"] =  infohelper.DataInfo.dataInfo.numberOfSensors
+        datainfo["timeBetweenUpdates"] =  infohelper.DataInfo.dataInfo.timeBetweenSensorReads
+        return jsonify(datainfo)
 
 # add REST end points
 api.add_resource(DataPoint, '/datapoint/<int:sensorid>')
@@ -228,14 +282,11 @@ api.add_resource(DataPointsToday, '/datapoints/today/<int:sensorid>')
 api.add_resource(DataPointsLastN, '/datapoints/<int:sensorid>/<int:numberRows>/<int:interleave>')
 api.add_resource(ValueChange, '/datachange/<int:sensorid>/<int:numberrows>')
 api.add_resource(ServerInfo, '/serverinfo')
+api.add_resource(DataInfo, '/datainfo')
 
 # the main routine
 if __name__ == '__main__':
-    print("Starting Web Monitor Application")
 
-    # set up the logger
-    # logging.basicConfig(filename="/tmp/monitorwebapp.log", format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
-    logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=logging.INFO)
 
     # log start up message
     logging.info("***************************************************************")
