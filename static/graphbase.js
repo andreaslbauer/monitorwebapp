@@ -40,6 +40,7 @@ function drawChart(dataURL, statusTag, targetTag, chartTitle) {
             } else {
                 chartwidth = viewportWidth - 32;
                 chartheight = 205;
+            }
 
             var max = d3.max(data, function (d) {
                 return d.value;
