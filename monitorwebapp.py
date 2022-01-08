@@ -78,6 +78,10 @@ def shutdown():
     executor.submit(shutdownCMD)
     return render_template('shutdown.html')
 
+@app.route('/resetdb')
+def resetdb():
+    return render_template('resetdb.html')
+
 @app.route('/summarycharts')
 def summarycharts():
     return render_template('summarycharts.html')
