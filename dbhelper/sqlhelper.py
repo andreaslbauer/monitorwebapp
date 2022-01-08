@@ -133,3 +133,22 @@ def getAllRowsBySensorByDate(sensorId, date):
     mydb.close()
     return None
 
+# delete all rows
+def deleteAllRows(mydb):
+    sql = '''delete from datapoints'''
+    try:
+        cursor = mydb.cursor()
+        result = cursor.execute(sql,)
+        rowsdeleted = cursor.rowcount
+
+        logging.info("%i rows deleted.", rowsdeleted)
+        mydb.commit()
+        mydb.close()
+
+        return rowsdeleted
+
+    except sqlite3.Error as e:
+        logging.exception("Exception occurred")
+        logging.error("Unable to delete data points")
+
+        return 0

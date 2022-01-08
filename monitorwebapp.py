@@ -80,6 +80,9 @@ def shutdown():
 
 @app.route('/resetdb')
 def resetdb():
+    db = sqlhelper.createConnection(sqlhelper.dbfilename)
+    rowCount = sqlhelper.countRows(db)
+    sqlhelper.deleteAllRows(db)
     return render_template('resetdb.html')
 
 @app.route('/summarycharts')
