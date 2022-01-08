@@ -13,42 +13,55 @@ class DataInfo:
 
     # read rows to find out how many different sensors are generating data
     def getNumberOfSensors(self, db):
-        # get the DB info
-        rowCount = sqlhelper.countRows(db)
 
-        # count sensors by looking at rows
-        sensorCount = 0
-        rowidx = rowCount
-        row = sqlhelper.getRow(db, rowidx)
-        lastSensorId = row[1]
-        currentSensorId = -1
-        while (lastSensorId != currentSensorId) and (rowidx > 0):
-            rowidx = rowidx - 1
+        try:
+            # get the DB info
+            rowCount = sqlhelper.countRows(db)
+
+            # count sensors by looking at rows
+            sensorCount = 0
+            rowidx = rowCount
             row = sqlhelper.getRow(db, rowidx)
-            currentSensorId = row[1]
-            sensorCount = sensorCount + 1
+            lastSensorId = row[1]
+            currentSensorId = -1
+            while (lastSensorId != currentSensorId) and (rowidx > 0):
+                rowidx = rowidx - 1
+                row = sqlhelper.getRow(db, rowidx)
+                currentSensorId = row[1]
+                sensorCount = sensorCount + 1
 
-        return sensorCount
+            return sensorCount
 
+
+        except Exception as e:
+            pass
+
+        return 0
 
     # determine time between sensor reads - in seconds
-
     def getTimeBetweenSensorReads(self, db):
 
-        # get the DB info
-        rowCount = sqlhelper.countRows(db)
-        row = sqlhelper.getRow(db, rowCount)
-        sensorCount = self.getNumberOfSensors(db)
-        timeStampLast = row[4]
-        row = sqlhelper.getRow(db, rowCount - sensorCount)
-        timeStampLastBefore = row[4]
+        try:
 
-        date_format = "%Y-%m-%d %H:%M:%S.%f"
-        d1 = datetime.strptime(timeStampLastBefore, date_format)
-        d2 = datetime.strptime(timeStampLast, date_format)
-        seconds = int((d2 -d1).total_seconds())
+            # get the DB info
+            rowCount = sqlhelper.countRows(db)
+            row = sqlhelper.getRow(db, rowCount)
+            sensorCount = self.getNumberOfSensors(db)
+            timeStampLast = row[4]
+            row = sqlhelper.getRow(db, rowCount - sensorCount)
+            timeStampLastBefore = row[4]
 
-        return seconds
+            date_format = "%Y-%m-%d %H:%M:%S.%f"
+            d1 = datetime.strptime(timeStampLastBefore, date_format)
+            d2 = datetime.strptime(timeStampLast, date_format)
+            seconds = int((d2 -d1).total_seconds())
+
+            return seconds
+
+        except Exception as e:
+            pass
+
+        return 1000
 
 def getChange(db, rangeInbetween = 10):
     # compute the change
