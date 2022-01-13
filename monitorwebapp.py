@@ -27,6 +27,7 @@ from dbhelper import sqlhelper
 from dbhelper import infohelper
 from dbhelper import dataaccess
 import threading
+import shutil
 
 
 app = Flask(__name__)
@@ -80,9 +81,15 @@ def shutdown():
 
 @app.route('/resetdb')
 def resetdb():
-    db = sqlhelper.createConnection(sqlhelper.dbfilename)
-    rowCount = sqlhelper.countRows(db)
-    sqlhelper.deleteAllRows(db)
+    filename = sqlhelper.dbfilename
+    nowdatetime = datetime.datetime.now()
+    d = nowdatetime.strftime("%Y_%m_%d_%H_%M_%S")
+    newfilename = filename + "." + d
+    shutil.copyfile(filename, newfilename)
+    logging.info("Rename database file to %s", newfilename)
+    os.remove(filename)
+    logging.info("Delete database file to %s", filename)
+
     return render_template('resetdb.html')
 
 @app.route('/summarycharts')
@@ -155,8 +162,6 @@ def summary():
     page = page + "Time between sensor reads: " + str(timeBetweenReads) + '<p>'
 
     # display trends over past 10 mins
-
-
     rows = sqlhelper.getRows(db, rowCount - 12, rowCount)
     page = page + "Last 12 rows: <p>"
     for r in rows:
