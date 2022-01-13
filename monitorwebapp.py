@@ -79,6 +79,7 @@ def shutdown():
     executor.submit(shutdownCMD)
     return render_template('shutdown.html')
 
+# option to rename and delete the db file
 @app.route('/resetdb')
 def resetdb():
     filename = sqlhelper.dbfilename
