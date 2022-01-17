@@ -49,6 +49,17 @@
 </div>
 </div>
 
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+        // update hostname
+        $.getJSON('/serverinfo', function(d) {
+            $('#hostname').html(d.hostname);
+        });
+
+    });
+</script>
 
 {% endblock %}
 

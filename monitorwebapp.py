@@ -140,10 +140,10 @@ def webapplog():
     page = page + "</pre></html>"
     return page
 
-@app.route('/summary')
-def summary():
-    page = "<!DOCTYPE html>"
-    page = page + "<html><h1>Web Thermometer Sensor Summary</h1><hr><br>"
+@app.route('/opsstatus')
+def opsstatus():
+    page = ""
+    page = page + "<h3>Database Information</h3>"
 
     db = sqlhelper.createConnection(sqlhelper.dbfilename)
     rowCount = sqlhelper.countRows(db)
@@ -151,28 +151,27 @@ def summary():
     row = sqlhelper.getRow(db, rowCount)
 
     # display how many sensor are collecting data
-    sensorCount = infohelper.numberSensors(db)
+    sensorCount = infohelper.DataInfo.dataInfo.numberOfSensors
     page = page + "Number of sensors: " + str(sensorCount) + '<p>'
 
-    # display how many sensor are collecting data
-    rateOfChange = infohelper.getRateOfChange(db)
-    page = page + "Rate of change: " + str(rateOfChange) + '<p>'
-
     # display time elapsed between sensor writes
-    timeBetweenReads = infohelper.timeBetweenSensorReads(db)
+    timeBetweenReads = infohelper.DataInfo.dataInfo.timeBetweenSensorReads
     page = page + "Time between sensor reads: " + str(timeBetweenReads) + '<p>'
 
     # display trends over past 10 mins
     rows = sqlhelper.getRows(db, rowCount - 12, rowCount)
-    page = page + "Last 12 rows: <p>"
+    page = page + "Last 12 rows: <p><table>"
     for r in rows:
-        page = page + str(r) + '<p>'
+        page = page + "<tr>"
+        for c in r:
+            page = page + "<td>" + str(c) + '</td><'
+        page = page + "</tr>"
 
-    page = page + "Last data point: " + str(row) + '<p>'
+    page = page + "</table>Last data point: " + str(row) + '<p>'
     db.close()
 
-    page = page + "</html>"
-    return page
+    page = page + "<h3>Process Information</h3>"
+    return render_template('opssummary.html', data = page)
 
 # render table that shows values for all sensor
 @app.route('/changes')
