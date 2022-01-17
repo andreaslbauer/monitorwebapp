@@ -67,7 +67,7 @@ def getChange(db, rangeInbetween = 10):
     # compute the change
     timeBetween = DataInfo.dataInfo.timeBetweenSensorReads
     rowCount = sqlhelper.countRows(db)
-    sensorCount = DataInfo.dataInfo.numberSensors
+    sensorCount = DataInfo.dataInfo.numberOfSensors
 
     # get the last 6 rows
     offset = sensorCount * rangeInbetween
@@ -90,7 +90,7 @@ def getChanges(db, numberRows, timeInterleave = 10):
     timeBetween = DataInfo.dataInfo.timeBetweenSensorReads
     rangeInbetween = int(timeInterleave / (timeBetween + 1))
     rowCount = sqlhelper.countRows(db)
-    sensorCount = DataInfo.dataInfo.numberSensors
+    sensorCount = DataInfo.dataInfo.numberOfSensors
 
     # get the last 6 rows
     offset = sensorCount * rangeInbetween

@@ -174,12 +174,11 @@ def summary():
     page = page + "</html>"
     return page
 
+# render table that shows values for all sensor
 @app.route('/changes')
 def changes():
-
     db = sqlhelper.createConnection(sqlhelper.dbfilename)
-    a = infohelper.getChanges(db, 10, 10 * 60)
-
+    a = infohelper.getChanges(db, 15, 10 * 60)
     return render_template('changes.html', data = a, lastupdated = a[0][0])
 
 
@@ -268,7 +267,7 @@ class ValueChange(Resource):
     def get(self, sensorid, numberrows):
         db = sqlhelper.createConnection(sqlhelper.dbfilename)
         changes = infohelper.getChange(db, numberrows)
-        timeBetweenReads = infohelper.timeBetweenSensorReads(db) * numberrows
+        timeBetweenReads = infohelper.DataInfo.dataInfo.timeBetweenSensorReads * numberrows
         change = changes[sensorid - 1]
         rateOfChange = (60 * 60 * change) / timeBetweenReads
         return jsonify({'change': change,

@@ -1,33 +1,22 @@
 {% extends 'base.html' %}
-
 {% block header %}
-
 {% endblock %}
-
 {% block content %}
-
 
 <div class="container">
 <div class="p-1">
-
-    <h3>{% block title %}Changes{% endblock %}</h3>
-
-<p></p>
-
-<table class="table">
-    <td><form class="form-inline">
-    <input type="button" id="reloadCharts" class="btn btn-primary mx-sm-3" value="Update">
-</form></td>
+    {% block title %}
+    <table class="table">
+        <td><h3>Changes</h3></td>
     <td td class=nobr>Last Updated: <b><span id="currentLastUpdated">{{ lastupdated }}</span></b></td>
-</table>
-
+</table>{% endblock %}
 <table class="table table-striped">
     <thead class="thead-dark">
     <tr>
       <th scope="col">Time</th>
-      <th scope="col">Temp 1</th>
-      <th scope="col">Temp 2</th>
-      <th scope="col">Temp 3</th>
+      <th scope="col">Sensor 1</th>
+      <th scope="col">Sensor 2</th>
+      <th scope="col">Sensor 3</th>
     </tr>
   </thead>
     <tbody>
