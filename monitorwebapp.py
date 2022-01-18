@@ -160,14 +160,14 @@ def opsstatus():
 
     # display trends over past 10 mins
     rows = sqlhelper.getRows(db, rowCount - 12, rowCount)
-    page = page + "Last 12 rows: <p><table>"
+    page = page + 'Last 12 rows: <p><table class="table table-striped">'
     for r in rows:
         page = page + "<tr>"
         for c in r:
-            page = page + "<td>" + str(c) + '</td><'
+            page = page + "<td>" + str(c) + '</td>'
         page = page + "</tr>"
 
-    page = page + "</table>Last data point: " + str(row) + '<p>'
+    page = page + "</table>"
     db.close()
 
     page = page + "<h3>Process Information</h3>"
