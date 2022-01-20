@@ -79,7 +79,8 @@ def getLastRowForSensor(sensorId):
         result = cursor.execute(sql).fetchone()
         lastRow = result[0]
         cursor.execute('''SELECT * FROM datapoints WHERE sensorid=? and id>=? and id<=?''', (sensorId, lastRow - 5, lastRow,))
-        row = cursor.fetchone()
+        allrows = cursor.fetchall()
+        row = allrows[-1]
         mydb.close()
         return row
 
