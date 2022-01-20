@@ -17,9 +17,6 @@ from flask_executor import Executor
 # logging facility: https://realpython.com/python-logging/
 import os
 import time
-
-# sqlite3 access API
-
 import datetime
 import socket
 import requests
