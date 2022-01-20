@@ -268,7 +268,7 @@ class ValueChange(Resource):
         changes = infohelper.getChange(db, numberrows)
         timeBetweenReads = infohelper.DataInfo.dataInfo.timeBetweenSensorReads * numberrows
         change = changes[sensorid - 1]
-        rateOfChange = (60 * 60 * change) / timeBetweenReads
+        rateOfChange = (60 * change) / timeBetweenReads
         return jsonify({'change': change,
                         'rateOfChange' : rateOfChange})
 
