@@ -138,7 +138,7 @@ def webapplog():
     return page
 
 @app.route('/thermodisplaylog')
-def webapplog():
+def thermodisplaylog():
     f = open("/tmp/thermodisplay.log", "r")
 
     page = "<!DOCTYPE html>"
