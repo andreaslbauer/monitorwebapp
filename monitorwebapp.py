@@ -137,6 +137,20 @@ def webapplog():
     page = page + "</pre></html>"
     return page
 
+@app.route('/thermodisplaylog')
+def webapplog():
+    f = open("/tmp/thermodisplay.log", "r")
+
+    page = "<!DOCTYPE html>"
+    page = page + "<html><h1>Thermodisplay Log</h1><hr><br><pre>"
+
+    for line in f:
+        page = page + line
+
+    page = page + "</pre></html>"
+    return page
+
+
 @app.route('/opsstatus')
 def opsstatus():
     page = ""
