@@ -25,6 +25,7 @@ from dbhelper import infohelper
 from dbhelper import dataaccess
 import threading
 import shutil
+import psutil
 
 
 app = Flask(__name__)
@@ -181,7 +182,23 @@ def opsstatus():
     page = page + "</table>"
     db.close()
 
-    page = page + "<h3>Process Information</h3>"
+    page = page + '<h3>Process Information</h3><p><table class="table table-striped">'
+    page = page + "<th>Name</th><th>PID</th><th>Status</th><th>User</th><th>User Time</th><th>System Time</th><th>Memory</th>"
+    for p in psutil.process_iter():
+
+        cmdline = p.cmdline()
+        if (len(cmdline) > 1):
+            if ('python' in cmdline[0]) and ('pimon' in cmdline[1]):
+                page = page + "<tr>"
+                page = page + "<td>" + p.exe() + ' ' + cmdline[1] + "</td>"
+                page = page + "<td>" + str(p.pid) + "</td>"
+                page = page + "<td>" + str(p.status()) + "</td>"
+                page = page + "<td>" + str(p.username()) + "</td>"
+                page = page + "<td>" + str(p.cpu_times()[0]) + "</td>"
+                page = page + "<td>" + str(p.cpu_times()[1]) + "</td>"
+                page = page + "<td>" + str(p.memory_info()[0]) + "</td>"
+                page = page + "</tr>"
+
     return render_template('opssummary.html', data = page)
 
 # render table that shows values for all sensor
