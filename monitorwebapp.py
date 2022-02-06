@@ -26,6 +26,7 @@ from dbhelper import dataaccess
 import threading
 import shutil
 import psutil
+from appconfig import config
 
 
 app = Flask(__name__)
@@ -97,6 +98,10 @@ def summarycharts():
 
 @app.route('/detailedcharts')
 def detailedcharts():
+
+    interleave = config.ConfigInfo.configInfo.chartInterleave()
+    logging.info("Chart interleave: %s", interleave)
+
     return render_template('detailedcharts.html')
 
 @app.route('/datacollectorlog')
@@ -314,6 +319,15 @@ class DataInfo(Resource):
         datainfo["timeBetweenUpdates"] =  infohelper.DataInfo.dataInfo.timeBetweenSensorReads
         return jsonify(datainfo)
 
+class ChartConfig(Resource):
+
+    def get(self):
+        chartconfig = {}
+        chartconfig["chartInterleave"] = config.ConfigInfo.configInfo.chartInterleave
+        chartconfig["numberSamples"] =  config.ConfigInfo.configInfo.chartShowNumberSamples
+        return jsonify(chartconfig)
+
+
 # add REST end points
 api.add_resource(DataPoint, '/datapoint/<int:sensorid>')
 api.add_resource(DataPoints, '/datapoints/<int:sensorid>')
@@ -322,6 +336,8 @@ api.add_resource(DataPointsLastN, '/datapoints/<int:sensorid>/<int:numberRows>/<
 api.add_resource(ValueChange, '/datachange/<int:sensorid>/<int:numberrows>')
 api.add_resource(ServerInfo, '/serverinfo')
 api.add_resource(DataInfo, '/datainfo')
+api.add_resource(ChartConfig, '/chartconfig')
+
 
 # the main routine
 if __name__ == '__main__':
@@ -350,4 +366,6 @@ if __name__ == '__main__':
 
     db = sqlhelper.createConnection(sqlhelper.dbfilename)
     app.run(debug=True, host='0.0.0.0')
+
+    config.ConfigInfo.configInfo.store()
 

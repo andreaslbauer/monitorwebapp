@@ -7,7 +7,7 @@ from dbhelper import sqlhelper
 # get specific row
 def getLastNRowsBySensor(sensorId, rowCount):
     try:
-        logging.info("Get last %s data points for sensor %s", rowCount, sensorId)
+        #logging.info("Get last %s data points for sensor %s", rowCount, sensorId)
         mydb = sqlhelper.createConnection(sqlhelper.dbfilename)
         cursor = mydb.cursor()
         sql = '''select count(*) from datapoints'''
