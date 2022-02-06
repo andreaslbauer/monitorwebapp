@@ -98,10 +98,6 @@ def summarycharts():
 
 @app.route('/detailedcharts')
 def detailedcharts():
-
-    interleave = config.ConfigInfo.configInfo.chartInterleave()
-    logging.info("Chart interleave: %s", interleave)
-
     return render_template('detailedcharts.html')
 
 @app.route('/datacollectorlog')
@@ -365,6 +361,7 @@ if __name__ == '__main__':
         logging.error("Unable to get network information")
 
     db = sqlhelper.createConnection(sqlhelper.dbfilename)
+    logging.getLogger('werkzeug').level = logging.ERROR
     app.run(debug=True, host='0.0.0.0')
 
     config.ConfigInfo.configInfo.store()

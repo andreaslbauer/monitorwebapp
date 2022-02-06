@@ -72,7 +72,7 @@ def getRows(mydb, fromId, toId):
 # get the last data point for a given sensor
 def getLastRowForSensor(sensorId):
     try:
-        logging.info("Get last data point for sensor %s", sensorId)
+        #logging.info("Get last data point for sensor %s", sensorId)
         mydb = createConnection(dbfilename)
         cursor = mydb.cursor()
         sql = '''select count(*) from datapoints'''
@@ -95,7 +95,7 @@ def getLastRowForSensor(sensorId):
 # get all data points for a given sensor
 def getAllRowsForSensor(sensorId):
     try:
-        logging.info("Get last data point for sensor %s", sensorId)
+        #logging.info("Get last data point for sensor %s", sensorId)
         mydb = createConnection(dbfilename)
         cursor = mydb.cursor()
         sql = '''select count(*) from datapoints'''
@@ -116,7 +116,7 @@ def getAllRowsForSensor(sensorId):
 # get all data points for a given sensor
 def getAllRowsBySensorByDate(sensorId, date):
     try:
-        logging.info("Get all data points for sensor %s and %s", sensorId, date)
+        #logging.info("Get all data points for sensor %s and %s", sensorId, date)
         mydb = createConnection(dbfilename)
         cursor = mydb.cursor()
         sql = '''select count(*) from datapoints'''
