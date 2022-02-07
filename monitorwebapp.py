@@ -33,6 +33,8 @@ app = Flask(__name__)
 api = Api(app)
 executor = Executor(app)
 parser = reqparse.RequestParser()
+parser.add_argument('chartInterleave')
+parser.add_argument('chartShowNumberSamples')
 OurHostname = ""
 
 
@@ -315,13 +317,23 @@ class DataInfo(Resource):
         datainfo["timeBetweenUpdates"] =  infohelper.DataInfo.dataInfo.timeBetweenSensorReads
         return jsonify(datainfo)
 
+resourceFields = {
+    'chartInterleave':    fields.Integer,
+    'chartShowNumberSamples':       fields.Integer,
+}
+
 class ChartConfig(Resource):
 
+    @marshal_with(resourceFields)
     def get(self):
-        chartconfig = {}
-        chartconfig["chartInterleave"] = config.ConfigInfo.configInfo.chartInterleave
-        chartconfig["numberSamples"] =  config.ConfigInfo.configInfo.chartShowNumberSamples
-        return jsonify(chartconfig)
+        return config.ConfigInfo.configInfo
+
+    @marshal_with(resourceFields)
+    def post(self):
+        parsed_args = parser.parse_args()
+        config.ConfigInfo.configInfo.chartInterleave = parsed_args['chartInterleave']
+        config.ConfigInfo.configInfo.chartShowNumberSamples = parsed_args['chartShowNumberSamples']
+        config.ConfigInfo.configInfo.store()
 
 
 # add REST end points
@@ -364,5 +376,4 @@ if __name__ == '__main__':
     logging.getLogger('werkzeug').level = logging.ERROR
     app.run(debug=True, host='0.0.0.0')
 
-    config.ConfigInfo.configInfo.store()
 

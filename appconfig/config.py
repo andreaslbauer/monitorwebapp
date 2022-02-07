@@ -1,10 +1,11 @@
 import logging
+import pickle
 
 class ConfigInfo:
 
     # singleton instance
     configInfo = None
-    configFilename = 'monitorappconfig.txt'
+    configFilename = 'monitorapp.cfg'
 
     def __init__(self):
         self.timeBetweenUpdates = 15
@@ -14,10 +15,9 @@ class ConfigInfo:
     # load data from persistent store
     def load(self):
         try:
-            file = open(self.configFilename, "r")
-            self.timeBetweenUpdates = int(file.read())
-            self.chartShowNumberSamples = int(file.read())
-            self.chartInterleave = int(file.read())
+            file = open(self.configFilename, "rb")
+            tempdict = pickle.load(file)
+            self.__dict__.update(tempdict)
             file.close()
             logging.info("Read update interval: %i from file %s", self.timeBetweenUpdates, self.configFilename)
 
@@ -27,10 +27,8 @@ class ConfigInfo:
 
     # load data from persistent store
     def store(self):
-        file = open(self.configFilename, "w")
-        file.write(str(self.timeBetweenUpdates))
-        file.write(str(self.chartShowNumberSamples))
-        file.write(str(self.chartInterleave))
+        file = open(self.configFilename, "wb")
+        pickle.dump(self.__dict__, file, 2)
         file.close()
 
 ConfigInfo.configInfo = ConfigInfo()
