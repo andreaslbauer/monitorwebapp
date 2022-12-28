@@ -13,7 +13,7 @@
     ip = ""
 
     function updateCurrentTemperature() {
-        for (var i = 1; i < 4; i++) {
+        for (var i = 1; i < 6; i++) {
             let s = i.toString();
             $.getJSON(ip + '/datapoint/' + s, function(d) {
                 var tag = '#currentTemp' + s;
@@ -94,9 +94,21 @@
     </tr>
     <tr>
         <td><div id="channel3Status">Channel 3</div></td>
-        <td><div id="channel3Value"><span id="currentTemp3"></span></div></td>
-        <td><div id="channel3Rate1"><span id="currentRate131">N/A</span></div></td>
+        <td><div id="channel3Value"><span id="currentTemp3">N/A</span></div></td>
+        <td><div id="channel3Rate1"><span id="currentRate13">N/A</span></div></td>
         <td><div id="channel3Rate2"><span id="currentRate23">N/A</span></div></td>
+    </tr>
+    <tr>
+        <td><div id="channel4Status">Channel 4</div></td>
+        <td><div id="channel4Value"><span id="currentTemp4">N/A</span></div></td>
+        <td><div id="channel4Rate1"><span id="currentRate14">N/A</span></div></td>
+        <td><div id="channel4Rate2"><span id="currentRate24">N/A</span></div></td>
+    </tr>
+    <tr>
+        <td><div id="channel5Status">Channel 5</div></td>
+        <td><div id="channel5Value"><span id="currentTemp5">N/A</span></div></td>
+        <td><div id="channel5Rate1"><span id="currentRate15">N/A</span></div></td>
+        <td><div id="channel5Rate2"><span id="currentRate25">N/A</span></div></td>
     </tr>
     </tbody>
 </table>

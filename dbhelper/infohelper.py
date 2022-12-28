@@ -102,14 +102,18 @@ def getChanges(db, numberRows, timeInterleave = 10):
     # set up a return list that has change for each sensor
     changeArray = []
 
-    for rowIndex in range(0, numberRows):
-        changeArray.append([None] * (sensorCount + 1))
-        changeArray[rowIndex][0] = rows[rowIndex][1][3]
-        for sensor in range(0, sensorCount):
-            sensorId = rows[rowIndex][sensor][1]
-            v = round(rows[rowIndex][sensorId - 1][5], 1)
-            changeArray[rowIndex][sensorId] = v
+    try:
+        for rowIndex in range(0, numberRows):
+            changeArray.append([None] * (sensorCount + 1))
+            changeArray[rowIndex][0] = rows[rowIndex][1][3]
+            for sensor in range(0, sensorCount):
+                sensorId = rows[rowIndex][sensor][1]
+                v = round(rows[rowIndex][sensorId - 1][5], 1)
+                changeArray[rowIndex][sensorId] = v
 
+
+    except Exception as e:
+        pass
 
     return changeArray
 
